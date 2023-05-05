@@ -1,0 +1,7 @@
+{
+  "extends": "./node_modules/gts/",
+  "plugins": ["react-hooks"],
+  "rules": {
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}

@@ -2,6 +2,10 @@
   "extends": "./node_modules/gts/",
   "plugins": ["react-hooks"],
   "rules": {
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "node/no-unsupported-features/es-syntax": "none"
+  },
+  "parserOptions": {
+    "sourceType": "module"
   }
 }

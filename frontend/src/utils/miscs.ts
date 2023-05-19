@@ -100,3 +100,29 @@ export function fixNumber(num: number) {
 export function clamp(num: number, min: number, max: number) {
   return Math.min(Math.max(num, min), max);
 }
+
+// 获取数组的最后一个元素
+export function getArrLast<T>(arr: T[]): T | undefined {
+  return arr[arr.length - 1];
+}
+
+// 仿windows重命名，如果有重复项，自动添加序号
+export function autoRenameWithIndex(newName: string, localNames: string[]) {
+  const reg = /([\w\W]*)\((\d+)\)$/;
+  const r1 = reg.exec(newName);
+  const pureName1 = r1?.[1] || newName;
+  let maxIndex = 0;
+  localNames.forEach((t) => {
+    const r2 = reg.exec(t);
+    const pureName2 = r2?.[1] || t;
+    let index2 = 0;
+    if (pureName2 === pureName1) {
+      index2 = Number(r2?.[2] || 0) + 1;
+    }
+    if (index2 > maxIndex) {
+      maxIndex = index2;
+    }
+  });
+  const index1 = maxIndex + 1;
+  return index1 > 1 ? `${pureName1}(${index1 - 1})` : pureName1;
+}

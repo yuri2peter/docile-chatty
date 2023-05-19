@@ -4,9 +4,8 @@ import React from 'react';
 import { use100vh } from 'react-div-100vh';
 
 // 尺寸
-const scale = 4;
-const size1 = 297 * scale;
-const size2 = 210 * scale;
+const size1 = 800;
+const size2 = 700;
 
 // 背景
 // const bgGradient =

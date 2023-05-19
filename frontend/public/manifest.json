@@ -1,10 +1,10 @@
 {
-  "short_name": "Web Aircraft Carrier",
-  "name": "Web Aircraft Carriere",
+  "short_name": "Docile Chatty",
+  "name": "Docile Chatty",
   "icons": [
     {
-      "src": "/logos/512.png",
-      "type": "image/png",
+      "src": "/logos/512.jpg",
+      "type": "image/jpg",
       "sizes": "512x512"
     }
   ],

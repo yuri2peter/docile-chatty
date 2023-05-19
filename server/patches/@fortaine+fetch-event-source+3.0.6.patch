@@ -1,0 +1,152 @@
+diff --git a/node_modules/@fortaine/fetch-event-source/lib/cjs/fetch.cjs b/node_modules/@fortaine/fetch-event-source/lib/cjs/fetch.cjs
+index 2df5753..e6d20af 100644
+--- a/node_modules/@fortaine/fetch-event-source/lib/cjs/fetch.cjs
++++ b/node_modules/@fortaine/fetch-event-source/lib/cjs/fetch.cjs
+@@ -1,3 +1,4 @@
++// 针对该项目作出大量修改
+ "use strict";
+ var __rest = (this && this.__rest) || function (s, e) {
+     var t = {};
+@@ -23,37 +24,18 @@ function fetchEventSource(input, _a) {
+         if (!headers.accept) {
+             headers.accept = exports.EventStreamContentType;
+         }
+-        let curRequestController;
+-        function onVisibilityChange() {
+-            curRequestController.abort();
+-            if (!document.hidden) {
+-                create();
+-            }
+-        }
+-        if (typeof document !== 'undefined' && !openWhenHidden) {
+-            document.addEventListener('visibilitychange', onVisibilityChange);
+-        }
++        const curRequestController = new AbortController();
+         let retryInterval = DefaultRetryInterval;
+-        let retryTimer = 0;
+         function dispose() {
+-            if (typeof document !== 'undefined' && !openWhenHidden) {
+-                document.removeEventListener('visibilitychange', onVisibilityChange);
+-            }
+-            clearTimeout(retryTimer);
+             curRequestController.abort();
+         }
+         inputSignal === null || inputSignal === void 0 ? void 0 : inputSignal.addEventListener('abort', () => {
+             dispose();
+-            resolve();
+         });
+         const fetchFn = inputFetch !== null && inputFetch !== void 0 ? inputFetch : fetch;
+-        const onopen = inputOnOpen !== null && inputOnOpen !== void 0 ? inputOnOpen : defaultOnOpen;
+         async function create() {
+-            var _a;
+-            curRequestController = new AbortController();
+             try {
+                 const response = await fetchFn(input, Object.assign(Object.assign({}, rest), { headers, signal: curRequestController.signal }));
+-                await onopen(response);
+                 await (0, parse_js_1.getBytes)(response.body, (0, parse_js_1.getLines)((0, parse_js_1.getMessages)(onmessage, id => {
+                     if (id) {
+                         headers[LastEventId] = id;
+@@ -69,27 +51,12 @@ function fetchEventSource(input, _a) {
+                 resolve();
+             }
+             catch (err) {
+-                if (!curRequestController.signal.aborted) {
+-                    try {
+-                        const interval = (_a = onerror === null || onerror === void 0 ? void 0 : onerror(err)) !== null && _a !== void 0 ? _a : retryInterval;
+-                        clearTimeout(retryTimer);
+-                        retryTimer = setTimeout(create, interval);
+-                    }
+-                    catch (innerErr) {
+-                        dispose();
+-                        reject(innerErr);
+-                    }
+-                }
++                onerror && onerror(err);
++                reject(err);
+             }
+         }
+         create();
+     });
+ }
+ exports.fetchEventSource = fetchEventSource;
+-function defaultOnOpen(response) {
+-    const contentType = response.headers.get('content-type');
+-    if (!(contentType === null || contentType === void 0 ? void 0 : contentType.startsWith(exports.EventStreamContentType))) {
+-        throw new Error(`Expected content-type to be ${exports.EventStreamContentType}, Actual: ${contentType}`);
+-    }
+-}
+ //# sourceMappingURL=fetch.cjs.map
+\ No newline at end of file
+diff --git a/node_modules/@fortaine/fetch-event-source/lib/esm/fetch.js b/node_modules/@fortaine/fetch-event-source/lib/esm/fetch.js
+index b017607..a3f8eaa 100644
+--- a/node_modules/@fortaine/fetch-event-source/lib/esm/fetch.js
++++ b/node_modules/@fortaine/fetch-event-source/lib/esm/fetch.js
+@@ -20,37 +20,18 @@ export function fetchEventSource(input, _a) {
+         if (!headers.accept) {
+             headers.accept = EventStreamContentType;
+         }
+-        let curRequestController;
+-        function onVisibilityChange() {
+-            curRequestController.abort();
+-            if (!document.hidden) {
+-                create();
+-            }
+-        }
+-        if (typeof document !== 'undefined' && !openWhenHidden) {
+-            document.addEventListener('visibilitychange', onVisibilityChange);
+-        }
++        const curRequestController = new AbortController();
+         let retryInterval = DefaultRetryInterval;
+-        let retryTimer = 0;
+         function dispose() {
+-            if (typeof document !== 'undefined' && !openWhenHidden) {
+-                document.removeEventListener('visibilitychange', onVisibilityChange);
+-            }
+-            clearTimeout(retryTimer);
+             curRequestController.abort();
+         }
+         inputSignal === null || inputSignal === void 0 ? void 0 : inputSignal.addEventListener('abort', () => {
+             dispose();
+-            resolve();
+         });
+         const fetchFn = inputFetch !== null && inputFetch !== void 0 ? inputFetch : fetch;
+-        const onopen = inputOnOpen !== null && inputOnOpen !== void 0 ? inputOnOpen : defaultOnOpen;
+         async function create() {
+-            var _a;
+-            curRequestController = new AbortController();
+             try {
+                 const response = await fetchFn(input, Object.assign(Object.assign({}, rest), { headers, signal: curRequestController.signal }));
+-                await onopen(response);
+                 await getBytes(response.body, getLines(getMessages(onmessage, id => {
+                     if (id) {
+                         headers[LastEventId] = id;
+@@ -66,26 +47,11 @@ export function fetchEventSource(input, _a) {
+                 resolve();
+             }
+             catch (err) {
+-                if (!curRequestController.signal.aborted) {
+-                    try {
+-                        const interval = (_a = onerror === null || onerror === void 0 ? void 0 : onerror(err)) !== null && _a !== void 0 ? _a : retryInterval;
+-                        clearTimeout(retryTimer);
+-                        retryTimer = setTimeout(create, interval);
+-                    }
+-                    catch (innerErr) {
+-                        dispose();
+-                        reject(innerErr);
+-                    }
+-                }
++                onerror && onerror(err);
++                reject(err);
+             }
+         }
+         create();
+     });
+ }
+-function defaultOnOpen(response) {
+-    const contentType = response.headers.get('content-type');
+-    if (!(contentType === null || contentType === void 0 ? void 0 : contentType.startsWith(EventStreamContentType))) {
+-        throw new Error(`Expected content-type to be ${EventStreamContentType}, Actual: ${contentType}`);
+-    }
+-}
+ //# sourceMappingURL=fetch.js.map
+\ No newline at end of file

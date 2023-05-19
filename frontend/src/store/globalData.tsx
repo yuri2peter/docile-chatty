@@ -1,7 +1,14 @@
 // 全局内存数据引用（非react状态管理）
 
+import { nanoid } from 'nanoid';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface GlobalData {}
+interface GlobalData {
+  socketUserId: string;
+  inputMain: HTMLTextAreaElement | null;
+  chatPairsBox: HTMLDivElement | null;
+  mouseInChatPairs: boolean;
+}
 
 const data: GlobalData = getInitialGlobalData();
 
@@ -17,5 +24,10 @@ export function resetGlobalData() {
 
 // 空数据模板
 function getInitialGlobalData(): GlobalData {
-  return {};
+  return {
+    socketUserId: nanoid(),
+    chatPairsBox: null,
+    inputMain: null,
+    mouseInChatPairs: false,
+  };
 }

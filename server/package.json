@@ -12,10 +12,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
-    "free-port": "npx kill-port 3000",
+    "free-port": "npx kill-port 3000 && npx kill-port 1542",
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@fortaine/fetch-event-source": "^3.0.6",
     "@koa/cors": "^4.0.0",
     "@local/common": "file:../common",
     "@yuri2/markdown-parser": "^1.0.0",
@@ -30,6 +31,7 @@
     "koa-router": "^12.0.0",
     "koa-static": "^5.0.0",
     "lodash": "^4.17.21",
+    "log-update": "^5.0.1",
     "md5": "^2.3.0",
     "nanoid": "^3.3.4",
     "ora": "^6.1.2",

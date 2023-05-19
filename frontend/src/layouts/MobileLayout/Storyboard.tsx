@@ -39,7 +39,7 @@ const Storyboard: React.FC = () => {
       >
         <Stack spacing={2} alignItems="center">
           <img
-            src={'/logos/512.png'}
+            src={'/logos/512.jpg'}
             title="logo"
             width={isPortrait ? 180 : 120}
             style={{

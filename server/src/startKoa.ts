@@ -9,7 +9,7 @@ import koaPushState from 'koa-push';
 import staticServer from 'koa-static';
 import cors from '@koa/cors';
 import { MAX_FILE_SIZE, ROOT_PATH } from './configs';
-import { main as controller } from './controllers/index';
+import { comb as controller } from './controllers/index';
 import { nanoid } from 'nanoid';
 
 const USE_SPA = true;

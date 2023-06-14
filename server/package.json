@@ -16,7 +16,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@fortaine/fetch-event-source": "^3.0.6",
     "@koa/cors": "^4.0.0",
     "@local/common": "file:../common",
     "@yuri2/markdown-parser": "^1.0.0",

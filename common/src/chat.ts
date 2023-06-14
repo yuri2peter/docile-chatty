@@ -17,7 +17,6 @@ export const chatParamsSchema = z.object({
   top_p: z.number().min(0).max(1).default(0.7),
   temperature: z.number().min(0).max(2).default(1.0),
   history: chatHistorySchema,
-  timeout: z.number().min(1).max(120).default(60),
 });
 
 export type ChatParams = z.infer<typeof chatParamsSchema>;
@@ -56,7 +55,6 @@ export function chatTaskToChatParams(chatTask: ChatTask) {
     top_p: ChatStyleType[style].value.top_p,
     temperature: ChatStyleType[style].value.temperature,
     history: history.map((t) => [t.query, t.answer]),
-    timeout: 60,
   };
   return chatParamsSchema.parse(rel);
 }

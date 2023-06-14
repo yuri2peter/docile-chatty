@@ -20,12 +20,20 @@ export function saveStoreToLocal() {
 
 export const saveStoreToLocalThrottled = throttle(saveStoreToLocal, 2000);
 
+// 如果本地存储数据异常，可以用该方法重置
+window.resetLocalStore = () => {
+  localStorage.removeItem(LOCAL_KEY);
+  window.location.reload();
+};
+
 function loadStoreFromLocal() {
   try {
     const s = localStorage.getItem(LOCAL_KEY);
     const o = JSON.parse(s || '');
     const defaultStore1 = storeSchema.parse(o);
-    console.log('加载本地Store');
+    console.log(
+      '加载本地Store成功。如果您希望重置本地Store，请于控制台执行代码：resetLocalStore()'
+    );
     return defaultStore1;
   } catch (err) {
     console.warn('加载本地Store失败', err);

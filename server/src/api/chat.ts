@@ -1,45 +1,46 @@
 import ora from 'ora';
-import { fetchEventSource } from '@fortaine/fetch-event-source';
 import { CREATIVE_CHAT_GLM_API_ORIGIN } from '../configs';
 import { z } from 'zod';
 import axios from 'axios';
 import { ChatParams } from '@local/common';
+import { Readable } from 'stream';
 
 export async function chat(
-  { timeout, ...chatApiParams }: ChatParams,
-  onResponse: (res: string) => void
+  chatApiParams: ChatParams,
+  onResponse: (res: string) => void,
+  timeoutSeconds = 60
 ) {
   console.log(
     `Q: ${chatApiParams.query}\nA: ${chatApiParams.answer_prefix}...`
   );
+
   const spinner = ora(chatApiParams.query).start();
-  const ctrl = new AbortController();
+  const { data: readable } = await axios.post<Readable>(
+    CREATIVE_CHAT_GLM_API_ORIGIN + '/stream',
+    chatApiParams,
+    {
+      timeout: 5000, // 流请求的timeout指的是最小间隔时间，而不是总时间
+      responseType: 'stream',
+    }
+  );
   const timerTimeout = setTimeout(() => {
-    interrupt();
-  }, timeout * 1000);
-  await fetchEventSource(CREATIVE_CHAT_GLM_API_ORIGIN + '/stream', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(chatApiParams),
-    signal: ctrl.signal,
-    onmessage(ev) {
-      const res_1 = chatResponseParse(ev.data);
-      spinner.text = `[${res_1.length}] ${res_1}`;
-      onResponse(res_1);
-    },
-    onerror(err) {
-      console.error(err);
-      ctrl.abort();
+    readable.destroy(new Error(`Timeout(${timeoutSeconds}s)`));
+  }, timeoutSeconds * 1000);
+  await handleReadableStream(readable, (str) => {
+    const jsonStr = str.replace(/^data: /, '');
+    const text = chatResponseParse(jsonStr);
+    spinner.text = text;
+    onResponse(text);
+  })
+    .then(() => {
+      spinner.succeed();
+    })
+    .catch(() => {
       spinner.fail();
-    },
-    onclose() {},
-  }).finally(() => {
-    clearTimeout(timerTimeout);
-  });
-  spinner.succeed();
+    });
+  clearTimeout(timerTimeout);
 }
+
 export function interrupt() {
   return axios.post(CREATIVE_CHAT_GLM_API_ORIGIN + '/interrupt');
 }
@@ -70,4 +71,26 @@ function chatResponseParse(res: string) {
     .map((t) => t[0])
     .map((t) => t[t.length - 1])
     .map((t) => t[1])[0];
+}
+
+function handleReadableStream(
+  readable: Readable,
+  onData = (str: string) => {}
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // 消息处理
+    readable.on('data', (chunk) => {
+      onData(chunk.toString());
+    });
+
+    // 错误处理
+    readable.on('error', (error) => {
+      reject(error);
+    });
+
+    // 结束处理
+    readable.on('end', () => {
+      resolve();
+    });
+  });
 }

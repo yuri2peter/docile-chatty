@@ -54,16 +54,18 @@ export function newChatTask(chatParams: ChatParams, userId: string) {
         data: {
           taskId,
           success: true,
+          msg: 'ok',
         },
       });
     })
-    .catch(() => {
+    .catch((e: Error) => {
       sendSocketMsg({
         userId,
         event: 'chat_response_finish',
         data: {
           taskId,
           success: false,
+          msg: e.message,
         },
       });
     })

@@ -60,12 +60,16 @@ export function handleSocketCreate(socket: Socket) {
   });
 
   socket.on('chat_response_finish', (data) => {
-    const { taskId, success } = z
+    const { taskId, success, msg } = z
       .object({
         taskId: z.string(),
         success: z.boolean(),
+        msg: z.string(),
       })
       .parse(data);
+    if (!success) {
+      console.warn('chat process error:', msg);
+    }
     changeStore((d) => {
       if (taskId === d.processingChatPairId) {
         d.answerStatus = success ? 'fulfilled' : 'rejected';
@@ -92,31 +96,40 @@ export async function processChat() {
     return;
   }
   await checkProcessing();
-  const { data } = await axios.post(SERVER_ORIGIN + '/api/main/chat', {
-    userId: getGlobalData().socketUserId,
-    ...chatTaskToChatParams(currentChatTask),
-  });
-  const { taskId } = z.object({ taskId: z.string() }).parse(data);
-  changeStore((d) => {
-    d.processingChatPairId = taskId;
-    d.answerProcessing = true;
-    d.answerStatus = 'pending';
+  if (getStore().answerProcessing) {
+    return;
+  }
+  try {
+    changeStore((d) => {
+      d.answerProcessing = true;
+      d.answerStatus = 'pending';
+    });
+    const { data } = await axios.post(SERVER_ORIGIN + '/api/main/chat', {
+      userId: getGlobalData().socketUserId,
+      ...chatTaskToChatParams(currentChatTask),
+    });
+    const { taskId } = z.object({ taskId: z.string() }).parse(data);
+    changeStore((d) => {
+      d.processingChatPairId = taskId;
 
-    const currentChatTask = selectCurrentChatTask(d);
-    if (currentChatTask) {
-      currentChatTask.history.push({
-        id: taskId,
-        ...currentChatTask.input,
-        answer: '',
-      });
-      currentChatTask.input = {
-        query: '',
-        answerPrefix: '',
-      };
-    }
-  });
-  scrollChatBoxToBottom();
-  getGlobalData().inputMain?.focus();
+      const currentChatTask = selectCurrentChatTask(d);
+      if (currentChatTask) {
+        currentChatTask.history.push({
+          id: taskId,
+          ...currentChatTask.input,
+          answer: '',
+        });
+        currentChatTask.input = {
+          query: '',
+          answerPrefix: '',
+        };
+      }
+    });
+    scrollChatBoxToBottom();
+    getGlobalData().inputMain?.focus();
+  } catch (error) {
+    console.warn('Unexpected chat request error: ' + error);
+  }
 }
 
 export async function interrupt() {

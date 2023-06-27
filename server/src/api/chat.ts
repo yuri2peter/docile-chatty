@@ -46,31 +46,9 @@ export function interrupt() {
 }
 
 function chatResponseParse(res: string) {
-  // [
-  //   [
-  //     ['你是谁', '我是一只猫娘'],
-  //     [
-  //       '你喜欢做什么？',
-  //       '<span style="color:red">我平时</span>喜欢窝在主人身边，和主人玩耍，享受主人的关爱和呵护。',
-  //     ],
-  //   ],
-  //   '',
-  //   '',
-  // ]
-  return [res]
-    .map((t) => JSON.parse(t))
-    .map((t) =>
-      z
-        .tuple([
-          z.array(z.tuple([z.string(), z.string()])),
-          z.literal(''),
-          z.literal(''),
-        ])
-        .parse(t)
-    )
-    .map((t) => t[0])
-    .map((t) => t[t.length - 1])
-    .map((t) => t[1])[0];
+  // ["勾股定", [["简单证明勾股定理", "勾股定"]]]
+  const obj = JSON.parse(res);
+  return z.string().parse(obj[0]);
 }
 
 function handleReadableStream(
@@ -80,7 +58,11 @@ function handleReadableStream(
   return new Promise((resolve, reject) => {
     // 消息处理
     readable.on('data', (chunk) => {
-      onData(chunk.toString());
+      try {
+        onData(chunk.toString());
+      } catch (error) {
+        console.error(error);
+      }
     });
 
     // 错误处理

@@ -1,12 +1,12 @@
 # docile-chatty
 
-Docile Chatty 是一个适用于[CreativeChatGLM](https://github.com/ypwhs/CreativeChatGLM)的客户端，它提供了一个便于用户编辑、存储聊天记录的聊天 UI，致力于充分发挥 CreativeChatGLM 的“续写”能力和测试 ChatGLM。
+Docile Chatty 是一个适用于 [yuri2peter/my-chatglm2](https://github.com/yuri2peter/my-chatglm2) 的客户端，它提供了一个便于用户编辑、存储聊天记录的聊天 UI，致力于充分发挥 my-chatglm2 的聊天能力。
 
-感谢 CreativeChatGLM 和 ChatGLM 的作者/团队为我们带来这么有趣的项目。
+<img src="https://github.com/yuri2peter/docile-chatty/assets/23306626/4f2c389c-d153-4503-9e46-1a2dfef95769" width="700" />
 
 ## 使用
 
-TODO
+请前往 [yuri2peter/my-chatglm2](https://github.com/yuri2peter/my-chatglm2) 下载整合包体验。
 
 ## 开发
 

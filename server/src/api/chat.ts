@@ -16,8 +16,8 @@ export async function chat(
 
   const spinner = ora(chatApiParams.query).start();
   const { data: readable } = await axios.post<Readable>(
-    CREATIVE_CHAT_GLM_API_ORIGIN + '/stream',
-    chatApiParams,
+    CREATIVE_CHAT_GLM_API_ORIGIN + '/generate',
+    { ...chatApiParams, stream: true },
     {
       timeout: 5000, // 流请求的timeout指的是最小间隔时间，而不是总时间
       responseType: 'stream',
@@ -46,9 +46,8 @@ export function interrupt() {
 }
 
 function chatResponseParse(res: string) {
-  // ["勾股定", [["简单证明勾股定理", "勾股定"]]]
   const obj = JSON.parse(res);
-  return z.string().parse(obj[0]);
+  return z.string().parse(obj.response);
 }
 
 function handleReadableStream(

@@ -13,3 +13,8 @@ Docile Chatty 是一个适用于 [yuri2peter/my-chatglm2](https://github.com/yur
 本项目基于[yuri2peter/web-aircraft-carrier](https://github.com/yuri2peter/web-aircraft-carrier)脚手架开发。
 
 如果你有好的创意，欢迎提交 issue 和 pr。
+
+## 版本
+
+- V1.1 同步 my-chatglm2 的 V1.1 版本的 API 更新
+- V1.0 第一个对外版本
